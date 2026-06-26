@@ -75,7 +75,8 @@ At the end of every phase, Claude runs the **Phase Completion Checklist**, then 
 
 ## Current Status
 
-**Phase 2 complete** — added `lib/weather/types.ts` (domain types: `HourPoint`, `ScoredHour`,
-`DayForecast`, `Verdict`, `MetricVerdict`, `LimitingFactor`, `Forecast`) and `lib/weather/units.ts`
-(m→ft, m→mi, null-tolerant) with `units.test.ts` (6 passing). **Next: Phase 3** — `scoring.ts`
-test-first (the graded go/no-go core).
+**Phase 3 complete** — `lib/weather/scoring.ts` built test-first (TDD): per-metric scorers with
+Tara's thresholds as named constants, `worstVerdict`, `isInDemoWindow` (business hours ∩ daylight),
+`scoreHour`, `scoreDay` (worst-in-window verdict + `computeLimitingFactor` with hour + label).
+`scoring.test.ts` 29 tests; suite 35 passing. **Next: Phase 4** — `openMeteo.ts` +
+`app/api/forecast/route.ts` (fetch/merge the two Open-Meteo APIs).
