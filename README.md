@@ -3,6 +3,8 @@
 A 10-day go/no-go weather read for vessel demos at the **Gulf Test Range, Gulfport, MS**
 (30.3674, -89.0928), built for the demo scheduling coordinator to check each morning.
 
+**Live:** [saronic-challenge.vercel.app](https://saronic-challenge.vercel.app)
+
 Customer demos of autonomous surface vessels get scrubbed by weather: high wind, rough seas, rain
 (bad for optics), or low visibility. This tool pulls those conditions into one screen, applies the
 coordinator's own thresholds for a quick **GO / CAUTION / NO-GO** read per day.
@@ -94,5 +96,6 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Vitest. 
 
 ## Deploy
 
-Push to a Git repo and import it at [vercel.com/new](https://vercel.com/new); no environment
-variables required. Or `npx vercel` from the project root.
+Deployed on Vercel at **[saronic-challenge.vercel.app](https://saronic-challenge.vercel.app)** —
+no environment variables required. To deploy your own: push to a Git repo and import it at
+[vercel.com/new](https://vercel.com/new), or run `npx vercel` from the project root.
