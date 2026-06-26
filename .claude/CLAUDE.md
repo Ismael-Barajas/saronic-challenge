@@ -83,4 +83,11 @@ Condensed / Inter / JetBrains Mono; deep harbor palette; signal-flag verdict col
 `summarizeDay` to `scoring.ts` (per-metric headline reading, 3 tests). UI helpers in `lib/ui/`
 (`verdict.ts`, `format.ts`). Suite 45 passing; `next build` clean; live `/api/forecast` verified
 (10 days, 8a–5p window, mixed verdicts). Note: `TodayHero` consolidated into `DayDetail` (today is
-the default-selected day). **Next: Phase 6** — `lib/cache.ts` + offline fallback + `OfflineBanner`.
+the default-selected day).
+
+**Phase 6 complete** — `lib/cache.ts` (DI-friendly localStorage cache, defensive against SSR/quota/
+corrupt data; `cache.test.ts` 4 tests) + `OfflineBanner` + `ForecastView` rewired for cache-first
+hydration (instant render from cache, background refresh) and offline fallback (failed fetch keeps
+the cached view + a stale banner with retry). Also switched requests to `timezone=auto` and surfaced
+the resolved timezone in the header. Suite 49 passing; build clean. **Next: Phase 7** — Serwist PWA
+(manifest + service worker app shell).
