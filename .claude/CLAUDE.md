@@ -75,8 +75,8 @@ At the end of every phase, Claude runs the **Phase Completion Checklist**, then 
 
 ## Current Status
 
-**Phase 3 complete** — `lib/weather/scoring.ts` built test-first (TDD): per-metric scorers with
-Tara's thresholds as named constants, `worstVerdict`, `isInDemoWindow` (business hours ∩ daylight),
-`scoreHour`, `scoreDay` (worst-in-window verdict + `computeLimitingFactor` with hour + label).
-`scoring.test.ts` 29 tests; suite 35 passing. **Next: Phase 4** — `openMeteo.ts` +
-`app/api/forecast/route.ts` (fetch/merge the two Open-Meteo APIs).
+**Phase 4 complete** — `lib/weather/openMeteo.ts` (URL builders, pure `buildForecast` that merges
+the two APIs by timestamp + converts units + scores days, networked `fetchForecast` with marine
+degradation + ~30min revalidate) and `app/api/forecast/route.ts` (`GET` → scored `Forecast`, 502 on
+failure). `openMeteo.test.ts` 7 tests; suite 42 passing. Live Open-Meteo shapes verified against the
+parser. **Next: Phase 5** — UI components + `app/page.tsx` wired to `/api/forecast`.
