@@ -89,5 +89,13 @@ the default-selected day).
 corrupt data; `cache.test.ts` 4 tests) + `OfflineBanner` + `ForecastView` rewired for cache-first
 hydration (instant render from cache, background refresh) and offline fallback (failed fetch keeps
 the cached view + a stale banner with retry). Also switched requests to `timezone=auto` and surfaced
-the resolved timezone in the header. Suite 49 passing; build clean. **Next: Phase 7** — Serwist PWA
-(manifest + service worker app shell).
+the resolved timezone in the header. Suite 49 passing; build clean.
+
+**Phase 7 complete** — PWA (installable + offline app shell). Decision: skipped the Serwist
+dependency (its Turbopack integration is brand-new and risky on Next 16) in favour of a hand-rolled
+shell: native `app/manifest.ts`, `public/icon.svg` (sea-state mark), a runtime-caching
+`public/sw.js` (navigations network-first→cached shell; static assets cache-first; `/api/*` left to
+the page's localStorage cache), and `ServiceWorkerRegister` (production-only). PWA metadata +
+apple-web-app in `layout.tsx`. Verified served: `/manifest.webmanifest`, `/sw.js`, `/icon.svg` all
+200 and manifest auto-linked. Suite 49 passing; build clean. **Next: Phase 8** — polish, edge-case
+passes, deploy to Vercel.

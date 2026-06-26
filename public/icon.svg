@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Demo Look-Ahead">
+  <rect width="512" height="512" rx="112" fill="#0a1b24" />
+  <defs>
+    <clipPath id="bar">
+      <rect x="106" y="218" width="300" height="76" rx="38" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#bar)">
+    <rect x="106" y="218" width="100" height="76" fill="#36b98c" />
+    <rect x="206" y="218" width="100" height="76" fill="#e6a93b" />
+    <rect x="306" y="218" width="100" height="76" fill="#e0594a" />
+  </g>
+</svg>
