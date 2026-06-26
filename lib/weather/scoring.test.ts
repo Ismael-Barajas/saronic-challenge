@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { HourPoint } from "./types";
 import {
+  computeLimitingFactor,
   isInDemoWindow,
   scoreDay,
   scoreHour,
@@ -159,7 +160,7 @@ describe("scoreDay", () => {
     expect(day.limitingFactor?.metric).toBe("wind");
     expect(day.limitingFactor?.time).toBe("2026-06-26T14:00");
     expect(day.limitingFactor?.label.toLowerCase()).toContain("wind");
-    expect(day.limitingFactor?.label).toContain("2");
+    expect(day.limitingFactor?.label).toContain("2p");
   });
 
   it("ignores bad weather outside the demo window", () => {
@@ -210,5 +211,19 @@ describe("summarizeDay", () => {
     );
     const summary = summarizeDay(scoreDay({ date: "2026-06-26", hours, daylight }));
     expect(summary.wave.available).toBe(false);
+  });
+});
+
+describe("computeLimitingFactor", () => {
+  it("returns null on a clean GO", () => {
+    const scored = scoreHour(hour("2026-06-26T10:00"), true);
+    expect(computeLimitingFactor([scored], "GO")).toBeNull();
+  });
+
+  it("breaks severity ties to the earliest hour", () => {
+    const earlier = scoreHour(hour("2026-06-26T10:00", { windKn: 22 }), true);
+    const later = scoreHour(hour("2026-06-26T14:00", { windKn: 22 }), true);
+    const factor = computeLimitingFactor([later, earlier], "NO_GO");
+    expect(factor?.time).toBe("2026-06-26T10:00");
   });
 });

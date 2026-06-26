@@ -6,6 +6,7 @@
  * own thresholds* and never invents judgement beyond them.
  */
 
+import { formatHour } from "../ui/format";
 import type {
   DayForecast,
   DaylightInfo,
@@ -57,6 +58,7 @@ const VERDICT_SEVERITY: Record<Verdict, number> = {
   NO_GO: 2,
 };
 
+/** Skipped in hour/day roll-ups; `verdict` is a placeholder only. */
 function unavailable(metric: MetricKey): MetricVerdict {
   return { metric, verdict: "GO", value: null, available: false };
 }
@@ -211,13 +213,6 @@ function severity(metric: MetricKey, hour: ScoredHour): number {
   }
 }
 
-function formatHour(isoLocal: string): string {
-  const h = hourOf(isoLocal);
-  const period = h < 12 ? "am" : "pm";
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${h12}${period}`;
-}
-
 function weatherNote(weatherCode: number | null): string {
   if (weatherCode == null) return "";
   if (weatherCode === 45 || weatherCode === 48) return " · fog";
@@ -264,7 +259,11 @@ export function computeLimitingFactor(
       const mv = hour.metrics[metric];
       if (!mv.available || mv.verdict !== dayVerdict) continue;
       const sev = severity(metric, hour);
-      if (!best || sev > best.sev) {
+      if (
+        !best ||
+        sev > best.sev ||
+        (sev === best.sev && hour.time < best.hour.time)
+      ) {
         best = { metric, hour, sev };
       }
     }
@@ -292,9 +291,13 @@ export function summarizeDay(day: DayForecast): Record<MetricKey, MetricSummary>
       summary[metric] = { metric, value: null, verdict: "GO", available: false };
       continue;
     }
-    const worst = available.reduce((a, b) =>
-      severity(metric, b) > severity(metric, a) ? b : a,
-    );
+    const worst = available.reduce((a, b) => {
+      const sa = severity(metric, a);
+      const sb = severity(metric, b);
+      if (sb > sa) return b;
+      if (sb < sa) return a;
+      return a.time < b.time ? a : b;
+    });
     summary[metric] = {
       metric,
       value: worst.metrics[metric].value,

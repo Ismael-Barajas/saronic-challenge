@@ -11,11 +11,17 @@ import { OfflineBanner } from "./OfflineBanner";
 
 const LEGEND: Verdict[] = ["GO", "CAUTION", "NO_GO"];
 
+function readCachedForecast(): Forecast | null {
+  return loadForecast()?.forecast ?? null;
+}
+
 export function ForecastView() {
-  const [forecast, setForecast] = useState<Forecast | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [forecast, setForecast] = useState<Forecast | null>(readCachedForecast);
+  const [selectedDate, setSelectedDate] = useState<string | null>(
+    () => readCachedForecast()?.days[0]?.date ?? null,
+  );
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => readCachedForecast() == null);
   const [stale, setStale] = useState(false);
 
   const applyForecast = useCallback((data: Forecast) => {
@@ -23,9 +29,8 @@ export function ForecastView() {
     setSelectedDate((prev) => prev ?? data.days[0]?.date ?? null);
   }, []);
 
-  // Network-first with cache fallback: fetch live and cache it; if the fetch
-  // fails, fall back to the last cached forecast (flagged stale) so the app
-  // stays useful offline, and only error out when there's nothing cached.
+  // Stale-while-revalidate: initial state comes from cache (see useState above);
+  // this fetch refreshes live data, or flags stale / errors when offline.
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/forecast");
@@ -51,10 +56,8 @@ export function ForecastView() {
   }, [applyForecast]);
 
   useEffect(() => {
-    // Standard load-on-mount: refresh's state updates happen asynchronously
-    // after the fetch resolves, so there is no synchronous cascade. The rule
-    // flags any effect that transitively sets state, which is a false positive
-    // for data fetching on mount.
+    // Fetch-on-mount. refresh() only calls setState after `await`, so there's no
+    // synchronous cascade; the rule flags any effect that transitively sets state.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh();
   }, [refresh]);
