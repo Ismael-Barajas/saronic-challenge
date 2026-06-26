@@ -9,6 +9,8 @@ import {
 } from "./openMeteo";
 
 const sampleForecast: OMForecast = {
+  timezone: "America/Chicago",
+  timezone_abbreviation: "GMT-5",
   hourly: {
     time: ["2026-06-26T08:00", "2026-06-26T09:00"],
     wind_speed_10m: [10, 12],
@@ -54,13 +56,13 @@ function multiDayForecast(n: number): OMForecast {
 }
 
 describe("URL builders", () => {
-  it("requests the conditions Tara cares about, in knots and local time", () => {
+  it("requests the conditions Tara cares about, in knots and site-local time", () => {
     const url = buildForecastUrl();
     expect(url).toContain("wind_speed_10m");
     expect(url).toContain("visibility");
     expect(url).toContain("precipitation_probability");
     expect(url).toContain("wind_speed_unit=kn");
-    expect(url).toContain("timezone=America%2FChicago");
+    expect(url).toContain("timezone=auto"); // resolved from coordinates
     expect(url).toContain(`latitude=${GULFPORT.latitude}`);
   });
 
@@ -105,9 +107,10 @@ describe("buildForecast", () => {
     expect(forecast.days[9].lowerConfidence).toBe(true);
   });
 
-  it("carries site metadata", () => {
+  it("carries site metadata including the resolved timezone", () => {
     const forecast = buildForecast(sampleForecast, sampleMarine);
     expect(forecast.latitude).toBe(GULFPORT.latitude);
     expect(forecast.site).toContain("Gulfport");
+    expect(forecast.timezone).toBe("America/Chicago");
   });
 });

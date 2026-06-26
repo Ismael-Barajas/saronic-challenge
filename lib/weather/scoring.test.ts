@@ -8,6 +8,7 @@ import {
   scoreVisibility,
   scoreWave,
   scoreWind,
+  summarizeDay,
   worstVerdict,
 } from "./scoring";
 
@@ -178,5 +179,36 @@ describe("scoreDay", () => {
     const day = scoreDay({ date: "2026-06-26", hours, daylight });
     expect(day.waveDataAvailable).toBe(false);
     expect(day.verdict).toBe("GO"); // still scored on the other metrics
+  });
+});
+
+describe("summarizeDay", () => {
+  const daylight = { sunrise: "2026-06-26T06:00", sunset: "2026-06-26T20:00" };
+
+  it("reports the most adverse in-window reading per metric", () => {
+    const hours = [
+      hour("2026-06-26T09:00", { windKn: 10 }),
+      hour("2026-06-26T14:00", { windKn: 18 }), // the peak
+    ];
+    const summary = summarizeDay(scoreDay({ date: "2026-06-26", hours, daylight }));
+    expect(summary.wind.value).toBe(18);
+    expect(summary.wind.verdict).toBe("CAUTION");
+  });
+
+  it("ignores out-of-window readings", () => {
+    const hours = [
+      hour("2026-06-26T03:00", { windKn: 40 }), // overnight, excluded
+      hour("2026-06-26T12:00", { windKn: 9 }),
+    ];
+    const summary = summarizeDay(scoreDay({ date: "2026-06-26", hours, daylight }));
+    expect(summary.wind.value).toBe(9);
+  });
+
+  it("marks a metric unavailable when it has no in-window data", () => {
+    const hours = ["09:00", "14:00"].map((t) =>
+      hour(`2026-06-26T${t}`, { waveFt: null }),
+    );
+    const summary = summarizeDay(scoreDay({ date: "2026-06-26", hours, daylight }));
+    expect(summary.wave.available).toBe(false);
   });
 });

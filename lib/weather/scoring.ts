@@ -12,10 +12,13 @@ import type {
   HourPoint,
   LimitingFactor,
   MetricKey,
+  MetricSummary,
   MetricVerdict,
   ScoredHour,
   Verdict,
 } from "./types";
+
+const METRIC_KEYS: MetricKey[] = ["wind", "wave", "precip", "visibility"];
 
 // ---------------------------------------------------------------------------
 // Thresholds — Tara's stated limits, as named constants (the single source of
@@ -254,11 +257,10 @@ export function computeLimitingFactor(
 ): LimitingFactor | null {
   if (dayVerdict === "GO") return null;
 
-  const metricKeys: MetricKey[] = ["wind", "wave", "precip", "visibility"];
   let best: { metric: MetricKey; hour: ScoredHour; sev: number } | null = null;
 
   for (const hour of hours) {
-    for (const metric of metricKeys) {
+    for (const metric of METRIC_KEYS) {
       const mv = hour.metrics[metric];
       if (!mv.available || mv.verdict !== dayVerdict) continue;
       const sev = severity(metric, hour);
@@ -271,4 +273,34 @@ export function computeLimitingFactor(
   if (!best) return null;
   const { value, label } = describe(best.metric, best.hour);
   return { metric: best.metric, verdict: dayVerdict, value, time: best.hour.time, label };
+}
+
+/**
+ * The headline reading per metric for a day: the most adverse in-window hour for
+ * each of wind / wave / precip / visibility. Drives the metric readouts in the
+ * UI so it never re-implements threshold logic. Falls back to all hours if the
+ * demo window is somehow empty.
+ */
+export function summarizeDay(day: DayForecast): Record<MetricKey, MetricSummary> {
+  const windowHours = day.hours.filter((h) => h.inWindow);
+  const pool = windowHours.length > 0 ? windowHours : day.hours;
+
+  const summary = {} as Record<MetricKey, MetricSummary>;
+  for (const metric of METRIC_KEYS) {
+    const available = pool.filter((h) => h.metrics[metric].available);
+    if (available.length === 0) {
+      summary[metric] = { metric, value: null, verdict: "GO", available: false };
+      continue;
+    }
+    const worst = available.reduce((a, b) =>
+      severity(metric, b) > severity(metric, a) ? b : a,
+    );
+    summary[metric] = {
+      metric,
+      value: worst.metrics[metric].value,
+      verdict: worst.metrics[metric].verdict,
+      available: true,
+    };
+  }
+  return summary;
 }

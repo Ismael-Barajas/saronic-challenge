@@ -72,6 +72,15 @@ export interface LimitingFactor {
   label: string;
 }
 
+/** The headline (most adverse) reading for one metric over a day's window. */
+export interface MetricSummary {
+  metric: MetricKey;
+  /** Value in display units at the most adverse in-window hour, or `null`. */
+  value: number | null;
+  verdict: Verdict;
+  available: boolean;
+}
+
 /** A single day's forecast plus its computed go/no-go read. */
 export interface DayForecast {
   /** Local calendar date, "YYYY-MM-DD". */
@@ -96,6 +105,10 @@ export interface Forecast {
   site: string;
   latitude: number;
   longitude: number;
+  /** IANA timezone of the times, resolved from the site coordinates. */
+  timezone: string;
+  /** Short timezone label from the upstream API (e.g. "GMT-5"). */
+  timezoneAbbreviation: string;
   /** When the upstream data was fetched (ISO 8601). */
   fetchedAt: string;
   days: DayForecast[];

@@ -58,8 +58,9 @@ constants.
 
 - Scoring stays framework-agnostic and pure; UI never re-implements threshold logic.
 - Thresholds / window bounds are named constants in `scoring.ts`, not magic numbers scattered in UI.
-- All Open-Meteo requests use `timezone=America/Chicago` so hours and sunrise/sunset are in local
-  site time (Gulfport is Central).
+- All Open-Meteo requests use `timezone=auto`, so hours and sunrise/sunset come back local to the
+  site's resolved timezone (carries over unchanged to future sites). The resolved IANA timezone is
+  surfaced in the header.
 
 ## Workflow
 
@@ -75,8 +76,11 @@ At the end of every phase, Claude runs the **Phase Completion Checklist**, then 
 
 ## Current Status
 
-**Phase 4 complete** — `lib/weather/openMeteo.ts` (URL builders, pure `buildForecast` that merges
-the two APIs by timestamp + converts units + scores days, networked `fetchForecast` with marine
-degradation + ~30min revalidate) and `app/api/forecast/route.ts` (`GET` → scored `Forecast`, 502 on
-failure). `openMeteo.test.ts` 7 tests; suite 42 passing. Live Open-Meteo shapes verified against the
-parser. **Next: Phase 5** — UI components + `app/page.tsx` wired to `/api/forecast`.
+**Phase 5 complete** — "Bridge Console" UI. Tokens + fonts in `globals.css`/`layout.tsx` (Saira
+Condensed / Inter / JetBrains Mono; deep harbor palette; signal-flag verdict colours). Components:
+`VerdictPill`, `HourlyStrip` (signature sea-state ribbon), `MetricReadout`, `DayDetail`,
+`DayRailItem`, `ForecastView` (client fetch + master-detail). `app/page.tsx` renders it. Added
+`summarizeDay` to `scoring.ts` (per-metric headline reading, 3 tests). UI helpers in `lib/ui/`
+(`verdict.ts`, `format.ts`). Suite 45 passing; `next build` clean; live `/api/forecast` verified
+(10 days, 8a–5p window, mixed verdicts). Note: `TodayHero` consolidated into `DayDetail` (today is
+the default-selected day). **Next: Phase 6** — `lib/cache.ts` + offline fallback + `OfflineBanner`.

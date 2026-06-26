@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * "Bridge Console" theme — a marine-forecast instrument.
+ * Deep harbor-water base, signal-flag verdict colours, hairline chart rules.
+ */
+@theme {
+  --color-deep: #0a1b24;
+  --color-panel: #0f2733;
+  --color-panel-2: #143241;
+  --color-line: #1e4456;
+  --color-ink: #e6eef1;
+  --color-dim: #7e97a3;
+
+  --color-go: #36b98c;
+  --color-caution: #e6a93b;
+  --color-nogo: #e0594a;
+  --color-accent: #4fb6c9;
+
+  --font-display: var(--font-saira);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-jbmono);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background-color: var(--color-deep);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--color-ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  background-color: var(--color-deep);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }

@@ -19,7 +19,9 @@ export const GULFPORT = {
 
 const FORECAST_BASE = "https://api.open-meteo.com/v1/forecast";
 const MARINE_BASE = "https://marine-api.open-meteo.com/v1/marine";
-const TIMEZONE = "America/Chicago"; // Gulfport is Central — keep hours/sun local.
+// `auto` resolves the timezone from the coordinates, so hours/sunrise are local
+// to the site — and this carries over unchanged to any future site.
+const TIMEZONE = "auto";
 const FORECAST_DAYS = 10;
 /** Days beyond this index (0-based) are flagged lower-confidence (days 8–10). */
 const LOWER_CONFIDENCE_FROM_INDEX = 7;
@@ -29,6 +31,9 @@ const REVALIDATE_SECONDS = 1800;
 // --- Upstream response shapes (only the fields we request) -------------------
 
 export interface OMForecast {
+  /** IANA timezone the times are in, resolved from the coordinates. */
+  timezone?: string;
+  timezone_abbreviation?: string;
   hourly: {
     time: string[];
     wind_speed_10m: (number | null)[];
@@ -145,6 +150,8 @@ export function buildForecast(
     site: GULFPORT.name,
     latitude: GULFPORT.latitude,
     longitude: GULFPORT.longitude,
+    timezone: forecast.timezone ?? "",
+    timezoneAbbreviation: forecast.timezone_abbreviation ?? "",
     fetchedAt: meta.fetchedAt ?? new Date().toISOString(),
     days,
   };
