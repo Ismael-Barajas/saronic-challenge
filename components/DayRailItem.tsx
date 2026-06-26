@@ -14,11 +14,13 @@ export function DayRailItem({
   isToday,
   isSelected,
   onSelect,
+  className = "",
 }: {
   day: DayForecast;
   isToday: boolean;
   isSelected: boolean;
   onSelect: () => void;
+  className?: string;
 }) {
   return (
     <button
@@ -29,7 +31,7 @@ export function DayRailItem({
         isSelected
           ? "border-accent/70 bg-panel-2"
           : "border-line bg-panel/40 hover:bg-panel-2/60"
-      } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent`}
+      } focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${className}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-display text-base font-semibold tracking-wide text-ink">

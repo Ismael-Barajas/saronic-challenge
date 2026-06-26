@@ -97,5 +97,11 @@ shell: native `app/manifest.ts`, `public/icon.svg` (sea-state mark), a runtime-c
 `public/sw.js` (navigations network-first→cached shell; static assets cache-first; `/api/*` left to
 the page's localStorage cache), and `ServiceWorkerRegister` (production-only). PWA metadata +
 apple-web-app in `layout.tsx`. Verified served: `/manifest.webmanifest`, `/sw.js`, `/icon.svg` all
-200 and manifest auto-linked. Suite 49 passing; build clean. **Next: Phase 8** — polish, edge-case
-passes, deploy to Vercel.
+200 and manifest auto-linked. Suite 49 passing; build clean.
+
+**Phase 8 complete (code)** — polish + cleanup: real `README.md` (decisions, run, architecture,
+scope), `Footer` (demo-window definition, thresholds, Open-Meteo attribution, decision-support
+note), header tagline. Refactored `ForecastView` data flow to network-first-with-cache-fallback
+(cleaner, lint-clean). ESLint config ignores harness dirs (`.agents`/`.claude`/`public/sw.js`);
+documented disable for the load-on-mount false positive. **Lint clean, tsc clean, 49 tests, build
+clean.** Remaining: user deploys to Vercel (no env vars needed — push + import, or `npx vercel`).
