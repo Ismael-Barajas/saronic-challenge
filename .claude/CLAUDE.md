@@ -75,6 +75,7 @@ At the end of every phase, Claude runs the **Phase Completion Checklist**, then 
 
 ## Current Status
 
-**Phase 1 complete** — scaffolded Next.js 16 + React 19 + Tailwind v4 (App Router), added Vitest
-(`npm test`, `vitest.config.ts`) and a `typecheck` script. **Next: Phase 2** — `lib/weather/types.ts`
-and `lib/weather/units.ts`.
+**Phase 2 complete** — added `lib/weather/types.ts` (domain types: `HourPoint`, `ScoredHour`,
+`DayForecast`, `Verdict`, `MetricVerdict`, `LimitingFactor`, `Forecast`) and `lib/weather/units.ts`
+(m→ft, m→mi, null-tolerant) with `units.test.ts` (6 passing). **Next: Phase 3** — `scoring.ts`
+test-first (the graded go/no-go core).
